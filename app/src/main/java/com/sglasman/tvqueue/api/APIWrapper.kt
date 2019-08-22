@@ -7,8 +7,5 @@ import com.sglasman.tvqueue.models.TVDBCredentials
 class APIWrapper(private val service: APIService) {
 
     suspend fun login(creds: TVDBCredentials): TVQResponse<String> =
-        service.login(creds.apiKey, creds.username, creds.userKey)
-            .getTVQResponse()
-            .map { it.token }
-
+        service.login(creds).getTVQResponse().map { it.token }
 }

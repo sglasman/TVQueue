@@ -13,6 +13,6 @@ sealed class TVQResponse<T> {
 }
 
 fun <T> Response<T>.getTVQResponse(): TVQResponse<T> = body()?.let {
-    if (this.isSuccessful) TVQResponse.Success(it)
-    else TVQResponse.Error(code(), errorBody()?.toString().orEmpty())
-} ?: TVQResponse.Error(code(), "Body was empty")
+    if (this.isSuccessful) TVQResponse.Success<T>(it)
+    else TVQResponse.Error<T>(code(), errorBody()?.toString().orEmpty())
+} ?: TVQResponse.Error<T>(code(), "Body was empty")

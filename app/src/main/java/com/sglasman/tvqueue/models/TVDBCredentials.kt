@@ -1,5 +1,7 @@
 package com.sglasman.tvqueue.models
 
-data class TVDBCredentials(val username: String, val userKey: String, val apiKey: String)
+import com.squareup.moshi.Json
 
-fun readCredsFromFile(): TVDBCredentials =
+data class TVDBCredentials(val username: String,
+                           @Json(name = "userkey")  val userKey: String,
+                           @Json(name = "apikey") val apiKey: String)
