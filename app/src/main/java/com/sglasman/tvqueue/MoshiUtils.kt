@@ -8,3 +8,5 @@ inline fun <reified T> Moshi.decode(s: String): T? = try {
 } catch (e: Exception) {
     null
 }
+
+inline fun <reified T> Moshi.encode(t: T): String = adapter(T::class.java).toJson(t)

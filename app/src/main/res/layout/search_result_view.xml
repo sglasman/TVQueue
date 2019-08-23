@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/search_result_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="8dp"
+            android:textColor="#808080"
+            android:textStyle="italic"
+            app:layout_constraintStart_toEndOf="@id/watching_bar"
+            app:layout_constraintTop_toBottomOf="@id/buffer"
+            tools:text="2017" />
+
+    <FrameLayout
+            android:id="@+id/buffer"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+            android:id="@+id/title_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/ended_or_ongoing_text"
+            app:layout_constraintStart_toEndOf="@id/watching_bar"
+            app:layout_constraintTop_toBottomOf="@id/date_text"
+
+            tools:text="The Handmaid's Tale" />
+
+    <TextView
+            android:id="@+id/preview_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:ellipsize="end"
+            android:maxLines="3"
+            app:layout_constraintBottom_toTopOf="@id/divider"
+            app:layout_constraintEnd_toEndOf="@id/ended_or_ongoing_text"
+            app:layout_constraintStart_toEndOf="@id/watching_bar"
+            app:layout_constraintTop_toBottomOf="@id/title_text"
+            tools:text="In a dystopian near-future, the totalitarian and Christian-fundamentalist government of Gilead rules the former United States amidst an ongoing civil war and subjugates women, who are not allowed to work, control money, or even read. Widespread infertility due to environmental contamination has resulted in the conscription of young fertile women—called Handmaids, according to biblical precedent—who are assigned to the homes of the elite, where they must have ritualized sex with the men in order to become pregnant and bear children for those men and their wives." />
+
+    <TextView
+            android:id="@+id/ended_or_ongoing_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/title_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/title_text"
+            tools:text="Ongoing" />
+
+    <FrameLayout
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:background="@color/lightGrey"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    <FrameLayout
+            android:id="@+id/watching_bar"
+            android:layout_width="50dp"
+            android:layout_height="0dp"
+            android:background="@color/green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+            android:id="@+id/tick_container"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/watching_bar"
+            app:layout_constraintEnd_toEndOf="@id/watching_bar"
+            app:layout_constraintStart_toStartOf="@id/watching_bar"
+            app:layout_constraintTop_toTopOf="@id/watching_bar" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/tick_image"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="@id/watching_bar"
+            app:layout_constraintEnd_toEndOf="@id/watching_bar"
+            app:layout_constraintStart_toStartOf="@id/watching_bar"
+            app:layout_constraintTop_toTopOf="@id/watching_bar"
+            android:tint="@color/green" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

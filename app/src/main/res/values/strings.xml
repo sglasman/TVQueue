@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TVQueue</string>
+    <string name="search">Search</string>
+    <string name="no_results">No results</string>
+    <string name="search_network_error">There\'s a network error and results cannot be retrieved.</string>
+    <string name="ongoing">Ongoing</string>
+    <string name="ended">Ended</string>
+    <string name="add_season">Add a season of this series?</string>
 </resources>
