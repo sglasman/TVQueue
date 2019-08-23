@@ -7,6 +7,6 @@ data class Series(val id: Int,
                   val name: String,
                   val seasons: List<Season>,
                   val alertFutureSeasons: Boolean = true,
-                  val latestSeason: Int) {
+                  val latestSeason: Int? = null) {
     fun getSeasonNumbers(): List<Int> = seasons.map { it.number }.sorted()
 }

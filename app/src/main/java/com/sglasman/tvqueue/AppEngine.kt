@@ -2,12 +2,12 @@ package com.sglasman.tvqueue
 
 import android.util.Log
 import com.sglasman.tvqueue.models.AppModel
-import com.sglasman.tvqueue.models.DialogMode
+import com.sglasman.tvqueue.models.DialogScreen
 import com.sglasman.tvqueue.models.Screen
 import com.sglasman.tvqueue.models.TVDBCredentials
-import com.sglasman.tvqueue.models.addseries.AddSeriesModel
 import com.sglasman.tvqueue.models.addseries.Stage
 import com.sglasman.tvqueue.models.search.SearchStatus
+import com.sglasman.tvqueue.models.storage.dataStore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
@@ -41,12 +41,25 @@ suspend fun sendAction(
 private var actionQueue: Channel<AppAction> = Channel(Channel.UNLIMITED)
 private var currentAction: AppAction? = null
 private var nextModel: CompletableDeferred<AppModel> = CompletableDeferred()
+
 private val backstack: Stack<AppModel> = Stack()
 
 private fun <T> Stack<T>.popOrNull(): T? = try {
     pop()
 } catch (e: EmptyStackException) {
     null
+}
+
+private fun <T> Stack<T>.peekOrNull(): T? = try {
+    peek()
+} catch (e: EmptyStackException) {
+    null
+}
+
+private fun <T> Stack<T>.popUntil(pred: (T) -> Boolean) {
+    while (peekOrNull()?.let { pred(it) } == false) {
+        pop()
+    }
 }
 
 @ExperimentalCoroutinesApi
@@ -105,7 +118,7 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
     is AppAction.SearchAction.ResultClicked -> {
         launch { sendAction(AppAction.SearchAction.GetSeriesFromResult(action.item)) }
         model.copy(
-            dialogMode = DialogMode.AddSeries,
+            dialogScreen = DialogScreen.AddSeries,
             addSeriesModel = model.addSeriesModel.copy(stage = Stage.Loading)
             )
     }
@@ -146,6 +159,21 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
                 .max() ?: model.addSeriesModel.selectedSeason
         )
     )
+
+    AppAction.AddSeriesAction.JustAddFutureSeasonsClicked -> {
+        model.addSeriesModel.series?.let {series ->
+            dataStore = dataStore.copy(
+                watchingSeries = dataStore.watchingSeries + series.copy(
+                    seasons = listOf(),
+                    alertFutureSeasons = true,
+                    latestSeason = model.addSeriesModel.seasonNumbers.max()!!
+                )
+            )
+        }
+        backstack.popUntil { it.dialogScreen is DialogScreen.NotShown }
+        sendAction(AppAction.BackPressed)
+        model
+    }
 }
 
 private fun getApiCredentials()

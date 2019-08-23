@@ -6,7 +6,7 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.sglasman.tvqueue.models.AppModel
-import com.sglasman.tvqueue.models.DialogMode
+import com.sglasman.tvqueue.models.DialogScreen
 import com.sglasman.tvqueue.models.Screen
 import com.sglasman.tvqueue.views.AddSeriesView
 import com.sglasman.tvqueue.views.SearchView
@@ -43,12 +43,13 @@ class TVQActivity : AppCompatActivity() {
         click_shield.visibility = VISIBLE
         click_shield.bringToFront()
         dialog_content.bringToFront()
-        when (model.dialogMode) {
-            is DialogMode.NotShown -> {
+        when (model.dialogScreen) {
+            is DialogScreen.NotShown -> {
                 dialog_content.visibility = GONE
                 click_shield.visibility = GONE
+                searchView.refreshData()
             }
-            is DialogMode.AddSeries -> {
+            is DialogScreen.AddSeries -> {
                 dialog_content.addViewIdempotent(addSeriesView)
                 addSeriesView.update(model.addSeriesModel)
             }

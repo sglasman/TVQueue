@@ -28,7 +28,11 @@ class AddSeriesView @JvmOverloads constructor(
                 showOnlyViews(progress_bar)
             }
             is Stage.SelectSeason -> {
-                showOnlyViews(add_season_text, title_text, season_number_select_ll)
+                showOnlyViews(add_season_text, title_text, season_number_select_ll,
+                    just_future_clickable_area, just_future_text)
+                just_future_clickable_area.setSuspendingOnClickListener {
+                    sendAction(AppAction.AddSeriesAction.JustAddFutureSeasonsClicked)
+                }
                 title_text.text = addSeriesModel.series?.name.orEmpty()
                 season_number_select.run {
                     setNumber(addSeriesModel.selectedSeason)

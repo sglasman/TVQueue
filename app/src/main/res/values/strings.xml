@@ -8,4 +8,6 @@
     <string name="add_season">Add a season of this series?</string>
     <string name="season">Season:</string>
     <string name="just_add_future_seasons">JUST ADD FUTURE SEASONS</string>
+    <string name="ok">OK</string>
+    <string name="no">NO</string>
 </resources>

@@ -18,5 +18,6 @@ sealed class AppAction {
     sealed class AddSeriesAction: AppAction() {
         object SeasonUpClicked: AddSeriesAction()
         object SeasonDownClicked: AddSeriesAction()
+        object JustAddFutureSeasonsClicked: AddSeriesAction()
     }
 }

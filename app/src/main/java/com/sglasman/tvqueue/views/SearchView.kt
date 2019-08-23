@@ -69,4 +69,8 @@ class SearchView @JvmOverloads constructor(
             .forEach { it.visibility = GONE }
         views.forEach { it.visibility = View.VISIBLE }
     }
+
+    fun refreshData() {
+        searchAdapter.notifyDataSetChanged()
+    }
 }
