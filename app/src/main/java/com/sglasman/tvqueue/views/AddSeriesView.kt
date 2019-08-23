@@ -3,6 +3,7 @@ package com.sglasman.tvqueue.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import com.sglasman.tvqueue.R
 import com.sglasman.tvqueue.models.addseries.AddSeriesModel
@@ -20,9 +21,17 @@ class AddSeriesView @JvmOverloads constructor(
     fun update(addSeriesModel: AddSeriesModel) {
         when(addSeriesModel.stage) {
             is Stage.Loading -> {
-                add_series_root.getChildren().forEach { it.visibility = GONE }
-                progress_bar.visibility = VISIBLE
+                showOnlyViews(progress_bar)
+            }
+            is Stage.SelectSeason -> {
+                showOnlyViews(add_season_text, title_text)
+                title_text.text = addSeriesModel.series?.name.orEmpty()
             }
         }
+    }
+
+    private fun showOnlyViews(vararg views: View) {
+        add_series_root.getChildren().forEach { it.visibility = GONE }
+        views.forEach { it.visibility = VISIBLE }
     }
 }

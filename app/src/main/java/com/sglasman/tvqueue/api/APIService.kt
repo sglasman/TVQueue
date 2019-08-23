@@ -17,6 +17,6 @@ interface APIService {
     @GET("search/series")
     suspend fun search(@Query("name") name: String): Response<SearchResponse>
 
-    @GET("series/{id}")
-    suspend fun getSeries(@Path("id") id: Int): Response<SeriesResponse>
+    @GET("series/{id}/episodes")
+    suspend fun getEpisodes(@Path("id") id: Int): Response<SeriesResponse>
 }

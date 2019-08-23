@@ -1,6 +1,7 @@
 package com.sglasman.tvqueue.api
 
-import android.text.format.DateUtils
+import android.util.Log
+import androidx.core.util.LogWriter
 import com.sglasman.tvqueue.TVQResponse
 import com.sglasman.tvqueue.getTVQResponse
 import com.sglasman.tvqueue.models.TVDBCredentials
@@ -10,6 +11,7 @@ import com.sglasman.tvqueue.models.series.Season
 import com.sglasman.tvqueue.models.series.Series
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,11 +30,11 @@ class APIWrapper(private val service: APIService) {
 
     suspend fun getSeries(id: Int, name: String): TVQResponse<Series> = withContext(Dispatchers.IO)
     {
-        service.getSeries(id).getTVQResponse().map { response ->
-        Series(
+        service.getEpisodes(id).getTVQResponse().flatMap { response -> try {
+        TVQResponse.Success(Series(
             id = id,
             name = name,
-            seasons = response.data.map { it.airedSeason }.distinct().map { seasonNumber -> try{
+            seasons = response.data.map { it.airedSeason }.distinct().map { seasonNumber ->
                 val seasonEpisodes = response.data.filter { it.airedSeason == seasonNumber}
                 val TVQEpisodes = seasonEpisodes.map { episode ->
                     val parsedDate = episode.firstAired!!.parseTVDBDate()!!
@@ -41,14 +43,16 @@ class APIWrapper(private val service: APIService) {
                         numberInSeason = episode.airedEpisodeNumber!!,
                         airDate = parsedDate,
                         dateToWatch = parsedDate)
-
                 }
                 Season(number = seasonNumber!!,
                     episodes = TVQEpisodes,
-                    dump = TVQEpisodes.map { it.airDate }.distinct().size == 1) }
-            })
+                    dump = TVQEpisodes.map { it.airDate }.distinct().size == 1)
+            }))
+        } catch (e: Exception) {
+            Log.e("getSeries","Trouble interpreting response", e)
+            TVQResponse.Error<Series>(-1, "")
         }
-    }
+    }}
 
     private fun String.parseTVDBDate(): Date? = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         .parse(this.takeWhile { it != ' ' })

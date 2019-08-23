@@ -79,7 +79,7 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
         launch { sendAction(AppAction.SearchAction.GetSeriesFromResult(action.item)) }
         model.copy(
             dialogMode = DialogMode.AddSeries,
-
+            addSeriesModel = model.addSeriesModel.copy(stage = Stage.Loading)
             )
     }
 

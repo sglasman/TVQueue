@@ -10,6 +10,11 @@ sealed class TVQResponse<T> {
         is Success -> Success(f(value))
         is Error -> Error(errorCode, message)
     }
+
+    fun <U> flatMap(f: (T) -> TVQResponse<U>): TVQResponse<U> = when (this) {
+        is Success -> f(value)
+        is Error -> Error(errorCode, message)
+    }
 }
 
 fun <T> Response<T>.getTVQResponse(): TVQResponse<T> = body()?.let {
