@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.core.util.LogWriter
 import com.sglasman.tvqueue.TVQResponse
 import com.sglasman.tvqueue.getTVQResponse
+import com.sglasman.tvqueue.ioContext
 import com.sglasman.tvqueue.models.TVDBCredentials
 import com.sglasman.tvqueue.models.search.SearchResult
 import com.sglasman.tvqueue.models.series.Episode
@@ -17,30 +18,31 @@ import java.util.*
 
 class APIWrapper(private val service: APIService) {
 
-    suspend fun login(creds: TVDBCredentials): TVQResponse<String> = withContext(Dispatchers.IO) {
+    suspend fun login(creds: TVDBCredentials): TVQResponse<String> = withContext(ioContext) {
         service.login(creds).getTVQResponse().map { it.token }
     }
 
-    suspend fun search(text: String): TVQResponse<List<SearchResult>> = withContext(Dispatchers.IO)
-    {
+    suspend fun search(text: String): TVQResponse<List<SearchResult>> = withContext(ioContext) {
         service.search(text).getTVQResponse().map {
             it.data.mapNotNull { it.toSearchResult() }
         }
     }
 
-    suspend fun getSeries(id: Int, name: String): TVQResponse<Series> = withContext(Dispatchers.IO)
-    {
+    suspend fun getSeries(id: Int, name: String): TVQResponse<Series> = withContext(ioContext) {
         service.getEpisodes(id).getTVQResponse().flatMap { response -> try {
         TVQResponse.Success(Series(
             id = id,
             name = name,
-            seasons = response.data.map { it.airedSeason }.distinct().map { seasonNumber ->
+            seasons = response.data.map { it.airedSeason }.distinct()
+                .apply { if (isEmpty()) throw Exception("No seasons of show") }
+                .map { seasonNumber ->
                 val seasonEpisodes = response.data.filter { it.airedSeason == seasonNumber}
                 val TVQEpisodes = seasonEpisodes.map { episode ->
-                    val parsedDate = episode.firstAired!!.parseTVDBDate()!!
+                    val parsedDate = episode.firstAired!!.parseTVDBDate()
                     Episode(seriesTitle = name,
                         title = episode.episodeName!!,
                         numberInSeason = episode.airedEpisodeNumber!!,
+                        id = id,
                         airDate = parsedDate,
                         dateToWatch = parsedDate)
                 }
@@ -54,6 +56,10 @@ class APIWrapper(private val service: APIService) {
         }
     }}
 
-    private fun String.parseTVDBDate(): Date? = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        .parse(this.takeWhile { it != ' ' })
+    private fun String.parseTVDBDate(): Date? = try {
+        SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            .parse(this.takeWhile { it != ' ' })
+    } catch (e: Exception) {
+        null
+    }
 }

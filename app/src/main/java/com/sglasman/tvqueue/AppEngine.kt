@@ -3,6 +3,7 @@ package com.sglasman.tvqueue
 import android.util.Log
 import com.sglasman.tvqueue.models.AppModel
 import com.sglasman.tvqueue.models.DialogMode
+import com.sglasman.tvqueue.models.Screen
 import com.sglasman.tvqueue.models.TVDBCredentials
 import com.sglasman.tvqueue.models.addseries.AddSeriesModel
 import com.sglasman.tvqueue.models.addseries.Stage
@@ -10,13 +11,27 @@ import com.sglasman.tvqueue.models.search.SearchStatus
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
+import java.util.*
 
 @ExperimentalCoroutinesApi
-suspend fun sendAction(action: AppAction, options: AppActionOptions? = null) {
+suspend fun sendAction(
+    action: AppAction,
+    options: AppActionOptions? = null,
+    addPreviousToBackstack: Boolean = false
+) {
+
+    if (addPreviousToBackstack) {
+        Log.d("Engine", "Pushing previous model to backstack")
+        backstack.push(appModel.value)
+    }
     if (options is AppActionOptions.CancelSearch &&
         currentAction is AppAction.SearchAction.SearchNow
     ) {
         Log.d("Engine", "Cancelling search")
+        nextModel.complete(appModel.value.copy())
+    }
+    if (options is AppActionOptions.CancelAllPending) {
+        actionQueue = Channel(Channel.UNLIMITED)
         nextModel.complete(appModel.value.copy())
     }
     Log.d("Engine", "Sending action $action")
@@ -26,6 +41,13 @@ suspend fun sendAction(action: AppAction, options: AppActionOptions? = null) {
 private var actionQueue: Channel<AppAction> = Channel(Channel.UNLIMITED)
 private var currentAction: AppAction? = null
 private var nextModel: CompletableDeferred<AppModel> = CompletableDeferred()
+private val backstack: Stack<AppModel> = Stack()
+
+private fun <T> Stack<T>.popOrNull(): T? = try {
+    pop()
+} catch (e: EmptyStackException) {
+    null
+}
 
 @ExperimentalCoroutinesApi
 suspend fun startEngine() {
@@ -47,6 +69,11 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
         is TVQResponse.Success -> model.copy(apiToken = response.value)
         is TVQResponse.Error -> model
     }
+
+    is AppAction.BackPressed -> backstack.popOrNull()?.let {
+        Log.d("Engine", "Popping model from backstack")
+        it
+    } ?: model.copy(currentScreen = Screen.Finishing)
 
     is AppAction.SearchAction.Back -> model
 
@@ -86,14 +113,38 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
     is AppAction.SearchAction.GetSeriesFromResult -> model.copy(
         addSeriesModel =
         when (val response = apiWrapper.getSeries(action.item.id, action.item.name)) {
-            is TVQResponse.Success -> model.addSeriesModel.copy(
-                series = response.value,
-                stage = Stage.SelectSeason
-            )
+            is TVQResponse.Success -> {
+
+                val series = response.value
+                val seasonNumbers = series.getSeasonNumbers()
+                val defaultSeason = if (1 in seasonNumbers) 1 else seasonNumbers.min()!!
+
+                model.addSeriesModel.copy(
+                    series = series,
+                    stage = Stage.SelectSeason,
+                    selectedSeason = defaultSeason
+                )
+            }
             is TVQResponse.Error -> model.addSeriesModel.copy(
                 stage = Stage.Error
             )
         }
+    )
+
+    AppAction.AddSeriesAction.SeasonUpClicked -> model.copy(
+        addSeriesModel = model.addSeriesModel.copy(
+            selectedSeason = model.addSeriesModel.seasonNumbers
+                .filter { it > model.addSeriesModel.selectedSeason }
+                .min() ?: model.addSeriesModel.selectedSeason
+        )
+    )
+
+    AppAction.AddSeriesAction.SeasonDownClicked -> model.copy(
+        addSeriesModel = model.addSeriesModel.copy(
+            selectedSeason = model.addSeriesModel.seasonNumbers
+                .filter { it < model.addSeriesModel.selectedSeason }
+                .max() ?: model.addSeriesModel.selectedSeason
+        )
     )
 }
 

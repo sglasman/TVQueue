@@ -6,4 +6,5 @@ import com.squareup.moshi.JsonClass
 data class EpisodeResponse(val airedSeason: Int?,
                            val episodeName: String?,
                            val firstAired: String?,
-                           val airedEpisodeNumber: Int?)
+                           val airedEpisodeNumber: Int?,
+                           val id: Int)

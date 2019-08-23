@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sglasman.tvqueue.AppAction
 import com.sglasman.tvqueue.R
-import com.sglasman.tvqueue.models.dataStore
+import com.sglasman.tvqueue.models.storage.dataStore
 import com.sglasman.tvqueue.models.search.SearchResult
 import com.sglasman.tvqueue.models.search.SeriesStatus
 import com.sglasman.tvqueue.sendAction
@@ -58,7 +58,12 @@ class SearchAdapter :
             listOf(watching_bar, tick_container, tick_image).forEach {
                 it.visibility = watching.toVisibility()
             }
-            setSuspendingOnClickListener { sendAction(AppAction.SearchAction.ResultClicked(item)) }
+            setSuspendingOnClickListener {
+                sendAction(
+                    AppAction.SearchAction.ResultClicked(item),
+                    addPreviousToBackstack = true
+                )
+            }
         }
     }
 

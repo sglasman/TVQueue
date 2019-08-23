@@ -47,52 +47,51 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-            android:id="@+id/season_text"
+    <LinearLayout
+            android:id="@+id/season_number_select_ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/season"
-            app:layout_constraintBottom_toBottomOf="@id/season_number"
-            app:layout_constraintEnd_toStartOf="@id/season_number"
-            app:layout_constraintTop_toTopOf="@id/season_number" />
-
-    <TextView
-            android:id="@+id/season_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="40sp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:translationX="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_text"
-            tools:text="1" />
+            app:layout_constraintTop_toBottomOf="@id/title_text">
 
-    <LinearLayout
-            android:id="@+id/arrow_clickable_areas"
-            android:layout_width="50dp"
-            android:layout_height="100dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@id/season_number"
-            app:layout_constraintStart_toEndOf="@id/season_number"
-            app:layout_constraintTop_toTopOf="@id/season_number">
+        <TextView
+                android:id="@+id/season_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/season" />
 
-        <FrameLayout
-                android:id="@+id/up_arrow_clickable_area"
-                android:layout_width="50dp"
-                android:layout_height="50dp" />
+        <com.sglasman.tvqueue.views.NumberSelectView
+                android:id="@+id/season_number_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <FrameLayout
-                android:id="@+id/down_arrow_clickable_area"
-                android:layout_width="50dp"
-                android:layout_height="50dp" />
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:id="@+id/up_arrow_image"
-        app:layout_constraintTop_toTopOf="@id/season_number"
-        app:layout_constraintStart_toEndOf="@id/season_number" />
+    <TextView
+            android:id="@+id/just_future_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:text="@string/just_add_future_seasons"
+            android:textColor="@color/green"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/season_number_select_ll" />
+
+    <FrameLayout
+            android:id="@+id/just_future_clickable_area"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            app:layout_constraintBottom_toBottomOf="@id/just_future_text"
+            app:layout_constraintEnd_toEndOf="@id/just_future_text"
+            app:layout_constraintStart_toStartOf="@id/just_future_text"
+            app:layout_constraintTop_toTopOf="@id/just_future_text" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

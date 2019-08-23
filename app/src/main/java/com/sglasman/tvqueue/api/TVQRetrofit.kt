@@ -22,7 +22,7 @@ private val addApiTokenInterceptor: Interceptor = Interceptor { chain ->
 private val TVQClient: OkHttpClient = OkHttpClient
     .Builder()
     .addInterceptor(addApiTokenInterceptor)
-    .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC})
+    .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY})
     .build()
 
 @ExperimentalCoroutinesApi

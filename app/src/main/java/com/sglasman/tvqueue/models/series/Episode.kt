@@ -5,10 +5,11 @@ import java.util.*
 
 @JsonClass(generateAdapter = true)
 data class Episode(
-    val watched: Boolean = false,
+    val willWatch: Boolean = false,
     val seriesTitle: String,
     val title: String,
     val numberInSeason: Int,
-    val airDate: Date,
-    val dateToWatch: Date
+    val id: Int,
+    val airDate: Date?,
+    val dateToWatch: Date?
 )

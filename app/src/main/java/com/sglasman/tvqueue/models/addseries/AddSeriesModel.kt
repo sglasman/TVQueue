@@ -7,7 +7,13 @@ data class AddSeriesModel(
     val stage: Stage = Stage.Loading,
     val selectedSeason: Int = 1,
     val selectedStartingEpisode: Int = 1
-)
+) {
+    val seasonNumbers: List<Int> = series?.getSeasonNumbers().orEmpty()
+
+    val shouldShowSeasonUpArrow: Boolean = selectedSeason != seasonNumbers.max()
+
+    val shouldShowSeasonDownArrow: Boolean = selectedSeason != seasonNumbers.min()
+}
 
 sealed class Stage {
     object Loading: Stage()
