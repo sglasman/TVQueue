@@ -73,4 +73,6 @@ class SearchView @JvmOverloads constructor(
     fun refreshData() {
         searchAdapter.notifyDataSetChanged()
     }
+
+    fun getSearchText(): String = search_edit_text.text.toString()
 }

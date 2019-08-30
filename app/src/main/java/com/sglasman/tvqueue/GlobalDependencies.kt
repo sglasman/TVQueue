@@ -10,6 +10,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import java.util.*
 import kotlin.coroutines.CoroutineContext
@@ -30,3 +31,7 @@ var ioContext: CoroutineContext = Dispatchers.IO
 val moshi: Moshi = Moshi.Builder()
     .add(Date::class.java, Rfc3339DateJsonAdapter())
     .build()
+
+var getCurrentDate: () -> Date = { Date() }
+
+val refreshChannel = Channel<Unit>(Channel.UNLIMITED)

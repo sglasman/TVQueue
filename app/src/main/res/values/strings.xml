@@ -10,4 +10,25 @@
     <string name="just_add_future_seasons">JUST ADD FUTURE SEASONS</string>
     <string name="ok">OK</string>
     <string name="no">NO</string>
+    <string name="get_future_seasons">Get future seasons of this series added automatically?</string>
+    <string name="next">NEXT</string>
+    <string name="start_at_which_episode">Start at which episode?</string>
+    <string name="starting_at_episode">Starting at episode:</string>
+    <string name="finish">FINISH</string>
+    <string name="future_seasons_will_be_added_automatically">Future seasons will be added automatically</string>
+    <string name="queue">Queue</string>
+    <string name="series">Series</string>
+    <string name="use_original_airdates">USE ORIGINAL AIRDATES</string>
+    <string name="schedule">SCHEDULE</string>
+    <string name="explanation_already_aired">This season has already finished airing. Do you want to start watching today?</string>
+    <string name="explanation_past_dump">All episodes of this season were released on one day. Do you want to separate them in your schedule?</string>
+    <string name="explanation_future_dump">All episodes of this season are scheduled to be released on one day. Do you want to separate them in your schedule?</string>
+    <string name="explanation_blank"> </string>
+    <string name="separate_episodes_by">Separate episodes by</string>
+    <string name="start_from_today">START FROM TODAY</string>
+    <string name="start_from_original">START FROM ORIGINAL AIRDATE</string>
+    <plurals name="days">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
 </resources>

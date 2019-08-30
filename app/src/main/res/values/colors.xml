@@ -6,4 +6,8 @@
     <color name="lightGrey">#F1F3F4</color>
     <color name="green">#81AC77</color>
     <color name="red">#CD5B5B</color>
+    <color name="blue">#4BADE6</color>
+    <color name="default_text">#808080</color>
+    <color name="darkGrey">#333333</color>
+    <color name="midGrey">#444444</color>
 </resources>

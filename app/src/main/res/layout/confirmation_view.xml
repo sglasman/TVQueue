@@ -14,52 +14,36 @@
             android:layout_marginTop="@dimen/standard_margin"
             android:layout_marginEnd="@dimen/standard_margin"
             android:textAlignment="center"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Confirm" />
 
-    <FrameLayout
-        android:id="@+id/ok_clickable_area"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:layout_constraintStart_toStartOf="@id/ok"
-            app:layout_constraintEnd_toEndOf="@id/ok"
-            app:layout_constraintBottom_toBottomOf="@id/ok"
-            app:layout_constraintTop_toTopOf="@id/ok"/>
-
     <TextView
             android:id="@+id/ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/standard_margin"
             android:layout_marginTop="@dimen/standard_margin"
             android:layout_marginBottom="@dimen/standard_margin"
+            android:padding="18dp"
             android:text="@string/ok"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/confirmation_text"
             android:textColor="@color/green"/>
-
-    <FrameLayout
-            android:id="@+id/no_clickable_area"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:layout_constraintStart_toStartOf="@id/no"
-            app:layout_constraintEnd_toEndOf="@id/no"
-            app:layout_constraintBottom_toBottomOf="@id/no"
-            app:layout_constraintTop_toTopOf="@id/no"/>
 
     <TextView
             android:id="@+id/no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/standard_margin"
             android:layout_marginTop="@dimen/standard_margin"
             android:layout_marginBottom="@dimen/standard_margin"
+            android:padding="18dp"
             android:text="@string/no"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/confirmation_text"
             android:textColor="@color/red"/>
 

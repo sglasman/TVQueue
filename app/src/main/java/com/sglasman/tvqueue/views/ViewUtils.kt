@@ -14,8 +14,9 @@ fun View.setSuspendingOnClickListener(block: suspend (View) -> Unit) = setOnClic
 
 fun Boolean.toVisibility(): Int = if (this) VISIBLE else GONE
 
-fun ViewGroup.addViewIdempotent(child: View) {
+fun ViewGroup.swapViewIdempotent(child: View) {
     if ((child.parent as? ViewGroup) != this) {
+        removeAllViews()
         (child.parent as? ViewGroup)?.removeView(child)
         addView(child)
     }

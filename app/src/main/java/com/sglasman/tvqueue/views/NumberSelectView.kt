@@ -23,6 +23,10 @@ class NumberSelectView @JvmOverloads constructor(
         number_text.text = number.toString()
     }
 
+    fun setLabelText(text: String) {
+        label_text.text = text
+    }
+
     fun setArrowVisibilities(upVisible: Boolean, downVisible: Boolean) {
         up_arrow_image.visibility = upVisible.toVisibility()
         up_arrow_clickable_area.isEnabled = upVisible

@@ -22,29 +22,125 @@ class AddSeriesView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.add_series_view, this, true)
     }
 
-    fun update(addSeriesModel: AddSeriesModel) {
-        when(addSeriesModel.stage) {
+    fun update(model: AddSeriesModel) {
+        when (model.stage) {
             is Stage.Loading -> {
                 showOnlyViews(progress_bar)
             }
             is Stage.SelectSeason -> {
-                showOnlyViews(add_season_text, title_text, season_number_select_ll,
-                    just_future_clickable_area, just_future_text)
-                just_future_clickable_area.setSuspendingOnClickListener {
-                    sendAction(AppAction.AddSeriesAction.JustAddFutureSeasonsClicked)
+                showOnlyViews(
+                    add_season_text,
+                    title_text,
+                    season_number_select,
+                    just_future_text,
+                    season_next_text
+                )
+                just_future_text.setSuspendingOnClickListener {
+                    sendAction(
+                        AppAction.AddSeriesAction.JustAddFutureSeasonsClicked,
+                        addPreviousToBackstack = true
+                    )
                 }
-                title_text.text = addSeriesModel.series?.name.orEmpty()
+                season_next_text.setSuspendingOnClickListener {
+                    sendAction(
+                        AppAction.AddSeriesAction.SeasonNextClicked,
+                        addPreviousToBackstack = true
+                    )
+                }
+                future_seasons_text.visibility = (!model.maxSeasonNotSelected).toVisibility()
+                title_text.text = model.series?.name.orEmpty()
                 season_number_select.run {
-                    setNumber(addSeriesModel.selectedSeason)
+                    setNumber(model.selectedSeasonNumber)
+                    setLabelText(context.getString(R.string.season))
                     setArrowVisibilities(
-                        upVisible = addSeriesModel.shouldShowSeasonUpArrow,
-                        downVisible = addSeriesModel.shouldShowSeasonDownArrow
+                        upVisible = model.maxSeasonNotSelected,
+                        downVisible = model.minSeasonNotSelected
                     )
                     setUpArrowClickedListener {
                         sendAction(AppAction.AddSeriesAction.SeasonUpClicked)
                     }
                     setDownArrowClickedListener {
                         sendAction(AppAction.AddSeriesAction.SeasonDownClicked)
+                    }
+                }
+            }
+            is Stage.SelectStartingEpisode -> {
+                showOnlyViews(
+                    title_text, season_number_select, start_at_episode_text,
+                    episode_number_select, episode_next_text
+                )
+                future_seasons_text.visibility = (!model.maxSeasonNotSelected).toVisibility()
+                season_number_select.setArrowVisibilities(false, false)
+                episode_number_select.run {
+                    setNumber(model.selectedStartingEpisodeNumber)
+                    setLabelText(context.getString(R.string.starting_at_episode))
+                    setArrowVisibilities(
+                        upVisible = model.maxEpisodeNotSelected,
+                        downVisible = model.minEpisodeNotSelected
+                    )
+                    setUpArrowClickedListener {
+                        sendAction(AppAction.AddSeriesAction.EpisodeUpClicked)
+                    }
+                    setDownArrowClickedListener {
+                        sendAction(AppAction.AddSeriesAction.EpisodeDownClicked)
+                    }
+                }
+                episode_next_text.text = context.getString(
+                    if (model.shouldShowNextAfterEpisodeSelect) R.string.next
+                    else R.string.finish
+                )
+                episode_next_text.setSuspendingOnClickListener {
+                    sendAction(
+                        if (model.shouldShowNextAfterEpisodeSelect)
+                            AppAction.AddSeriesAction.NextClickedAfterEpisodeSelect
+                        else AppAction.AddSeriesAction.FinishClickedAfterEpisodeSelect,
+                        addPreviousToBackstack = true
+                    )
+                }
+            }
+            is Stage.Schedule -> {
+                showOnlyViews(
+                    title_text, episode_number_select, season_number_select,
+                    explanation, schedule_text, use_original_text, separation_select, days_text
+                )
+                future_seasons_text.visibility = (!model.maxSeasonNotSelected).toVisibility()
+                episode_number_select.setArrowVisibilities(false, false)
+                separation_select.run {
+                    setNumber(model.selectedSeparation)
+                    setArrowVisibilities(
+                        upVisible = true,
+                        downVisible = model.selectedSeparation != 0
+                    )
+                    setLabelText(context.getString(R.string.separate_episodes_by))
+                    setDownArrowClickedListener {
+                        sendAction(AppAction.AddSeriesAction.SeparationDownClicked)
+                    }
+                    setUpArrowClickedListener {
+                        sendAction(AppAction.AddSeriesAction.SeparationUpClicked)
+                    }
+                }
+                explanation.text = context.getString(
+                    when {
+                        model.futureDump -> R.string.explanation_future_dump
+                        model.dump -> R.string.explanation_past_dump
+                        model.selectedSeasonFinishedAiring -> R.string.explanation_already_aired
+                        else -> R.string.explanation_blank
+                    }
+                )
+                days_text.text = context.resources.getQuantityText(
+                    R.plurals.days,
+                    model.selectedSeparation
+                )
+                schedule_text.run {
+                    if (model.pastDump) text = context.getString(R.string.start_from_today)
+                    setSuspendingOnClickListener {
+                        sendAction(AppAction.AddSeriesAction.ScheduleClicked)
+                    }
+                }
+                use_original_text.run {
+                    if (model.pastDump) text = context.getString(R.string.start_from_original)
+                    setSuspendingOnClickListener {
+                        sendAction(AppAction.AddSeriesAction.UseOriginalClicked)
                     }
                 }
             }

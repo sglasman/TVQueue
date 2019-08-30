@@ -47,51 +47,138 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-            android:id="@+id/season_number_select_ll"
+    <com.sglasman.tvqueue.views.NumberSelectView
+            android:id="@+id/season_number_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:translationX="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:translationX="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_text">
+            app:layout_constraintTop_toBottomOf="@id/title_text" />
 
-        <TextView
-                android:id="@+id/season_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/season" />
-
-        <com.sglasman.tvqueue.views.NumberSelectView
-                android:id="@+id/season_number_select"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-    </LinearLayout>
+    <TextView
+            android:id="@+id/future_seasons_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/future_seasons_will_be_added_automatically"
+            android:textColor="@color/blue"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/season_number_select" />
 
     <TextView
             android:id="@+id/just_future_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/standard_margin"
+            android:padding="18dp"
             android:text="@string/just_add_future_seasons"
+            android:textAlignment="center"
             android:textColor="@color/green"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/season_number_select_ll" />
+            app:layout_constraintTop_toBottomOf="@id/future_seasons_text" />
 
-    <FrameLayout
-            android:id="@+id/just_future_clickable_area"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            app:layout_constraintBottom_toBottomOf="@id/just_future_text"
-            app:layout_constraintEnd_toEndOf="@id/just_future_text"
-            app:layout_constraintStart_toStartOf="@id/just_future_text"
+    <TextView
+            android:id="@+id/season_next_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:text="@string/next"
+            android:textAlignment="center"
+            android:textColor="@color/green"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/just_future_text" />
 
+    <TextView
+            android:id="@+id/start_at_episode_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:text="@string/start_at_which_episode"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/future_seasons_text" />
+
+    <com.sglasman.tvqueue.views.NumberSelectView
+            android:id="@+id/episode_number_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:translationX="18dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/start_at_episode_text" />
+
+    <TextView
+            android:id="@+id/episode_next_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:padding="18dp"
+            android:textColor="@color/green"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/episode_number_select"
+            tools:text="@string/finish" />
+
+    <TextView
+            android:id="@+id/explanation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/episode_number_select"
+            tools:text="@string/explanation_already_aired" />
+
+    <com.sglasman.tvqueue.views.NumberSelectView
+            android:id="@+id/separation_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:translationX="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/explanation" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/days_text"
+            tools:text = "day"
+            android:translationX="-20dp"
+            app:layout_constraintTop_toTopOf="@id/separation_select"
+            app:layout_constraintBottom_toBottomOf="@id/separation_select"
+            app:layout_constraintStart_toEndOf="@id/separation_select"
+        />
+
+    <TextView
+            android:id="@+id/use_original_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:text="@string/use_original_airdates"
+            android:textAlignment="center"
+            android:textColor="@color/green"
+            android:textSize="12sp"
+            tools:text ="@string/start_from_original"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separation_select" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/schedule_text"
+            android:padding="18dp"
+            android:text="@string/schedule"
+            android:textAlignment="center"
+            android:textColor="@color/green"
+            android:textSize="12sp"
+            tools:text ="@string/start_from_today"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separation_select"
+            app:layout_constraintStart_toEndOf="@+id/use_original_text"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
