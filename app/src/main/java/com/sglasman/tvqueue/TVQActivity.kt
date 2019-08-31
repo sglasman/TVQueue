@@ -3,6 +3,7 @@ package com.sglasman.tvqueue
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +32,9 @@ class TVQActivity : AppCompatActivity() {
         }
         launch { appModel.openSubscription().consumeEach { update(it) } }
         launch { refreshChannel.consumeEach { refreshData() }}
+        launch { imeChannel.consumeEach {
+                if (!it) forceHideKeyboard(searchView)
+            }}
         series_text.setSuspendingOnClickListener {
             sendAction(AppAction.SeriesTextClicked(searchView.getSearchText()))
         }

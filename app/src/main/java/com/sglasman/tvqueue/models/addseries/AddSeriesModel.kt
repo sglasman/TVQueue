@@ -1,9 +1,7 @@
 package com.sglasman.tvqueue.models.addseries
 
-import com.sglasman.tvqueue.getCurrentDate
 import com.sglasman.tvqueue.models.series.Season
 import com.sglasman.tvqueue.models.series.Series
-import java.util.*
 
 data class AddSeriesModel(
     val series: Series? = null,
@@ -29,20 +27,11 @@ data class AddSeriesModel(
         selectedStartingEpisodeNumber != episodeNumbersInSelectedSeason.min()
 
     val dump = selectedSeason?.dump == true
+//  ID-0-6979000027355
 
-    private val selectedSeasonLatestAirdate: Date by lazy {
-        selectedSeason?.episodes?.map { it.airDate }?.max() ?: getCurrentDate()
+    val shouldShowNextAfterEpisodeSelect: Boolean by lazy {
+        dump || selectedSeason?.finishedAiring == true
     }
-
-    val selectedSeasonFinishedAiring: Boolean by lazy {
-        selectedSeasonLatestAirdate <= getCurrentDate()
-    }
-
-    val pastDump: Boolean by lazy { dump && selectedSeasonFinishedAiring }
-
-    val futureDump: Boolean by lazy { dump && !pastDump }
-
-    val shouldShowNextAfterEpisodeSelect: Boolean by lazy { dump || selectedSeasonFinishedAiring }
 }
 
 sealed class Stage {

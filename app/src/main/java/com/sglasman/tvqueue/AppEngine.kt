@@ -1,6 +1,7 @@
 package com.sglasman.tvqueue
 
 import android.util.Log
+import com.sglasman.tvqueue.api.runUpdates
 import com.sglasman.tvqueue.models.*
 import com.sglasman.tvqueue.models.addseries.Stage
 import com.sglasman.tvqueue.models.confirmation.ConfirmationModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.withContext
 import java.util.*
 
 @ExperimentalCoroutinesApi
@@ -121,6 +123,12 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
             ))
     }
 
+    is AppAction.RunUpdates -> {
+        withContext(ioContext) { runUpdates() }
+        refreshChannel.send(Unit)
+        model
+    }
+
     is AppAction.QueueAction.QueueItemClicked -> {
         model.copy(
             dialogScreen = DialogScreen.Confirmation,
@@ -165,6 +173,7 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
 
     is AppAction.SearchAction.ResultClicked -> {
         launch { sendAction(AppAction.SearchAction.GetSeriesFromResult(action.item)) }
+        imeChannel.send(false)
         model.copy(
             dialogScreen = DialogScreen.AddSeries,
             addSeriesModel = model.addSeriesModel.copy(
@@ -285,10 +294,15 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
                 val seasonToAdd = selectedSeason.copy(
                     episodes = selectedSeason.episodes.filter {
                         it.numberInSeason >= selectedStartingEpisodeNumber
-                    }
+                    },
+                    useOriginalAirdates = true,
+                    startingEpisode = selectedStartingEpisodeNumber
                 )
                 series?.let {
-                    val seriesToAdd = it.copy(seasons = listOf(seasonToAdd))
+                    val seriesToAdd = it.copy(
+                        seasons = listOf(seasonToAdd),
+                        alertFutureSeasons = !maxSeasonNotSelected
+                    )
                     dataStore = dataStore.mergeOrAddSeries(seriesToAdd)
                 }
             }
@@ -317,15 +331,15 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
         confirmationModel = ConfirmationModel(
             actionToConfirm = model.addSeriesModel.run {
                 AppAction.AddSeriesAction.ScheduleSeason(
-                    startDate = if (futureDump) selectedSeason?.episodes?.map { it.airDate }
-                        ?.min() ?: getCurrentDate().roundToDay()
+                    startDate = if (selectedSeason?.futureDump == true)
+                        selectedSeason.earliestAirdate
                     else getCurrentDate().roundToDay()
                 )
             },
             confirmationText = model.addSeriesModel.run {
                 "Scheduling season $selectedSeasonNumber ${
                 series?.let { "of ${it.name}" }
-                    ?: ""} starting  ${if (futureDump) "on release date" else "today"}, with episodes separated by $selectedSeparation days."
+                    ?: ""} starting ${if (selectedSeason?.futureDump == true) "on release date" else "today"}, with episodes separated by $selectedSeparation days."
             }
         )
     )
@@ -342,9 +356,15 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
                             episode.copy(
                                 dateToWatch = action.startDate.addDays(selectedSeparation * (episode.numberInSeason - 1))
                             )
-                        })
-
-                dataStore = dataStore.mergeOrAddSeries(series!!.copy(seasons = listOf(seasonToAdd)))
+                        },
+                    useOriginalAirdates = false,
+                    startDate = action.startDate,
+                    intervalDays = selectedSeparation,
+                    startingEpisode = selectedStartingEpisodeNumber)
+                dataStore = dataStore.mergeOrAddSeries(series!!.copy(
+                    seasons = listOf(seasonToAdd),
+                    alertFutureSeasons = !maxSeasonNotSelected
+                ))
             }
         }
         model.backOutOfDialog()
@@ -354,8 +374,8 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
         dialogScreen = DialogScreen.Confirmation,
         confirmationModel = ConfirmationModel(
             actionToConfirm = model.addSeriesModel.run {
-                if (pastDump) AppAction.AddSeriesAction.ScheduleSeason(
-                    selectedSeason?.episodes?.firstOrNull()?.airDate
+                if (selectedSeason?.pastDump == true) AppAction.AddSeriesAction.ScheduleSeason(
+                    selectedSeason.episodes.firstOrNull()?.airDate
                         ?: getCurrentDate().roundToDay()
                 )
                 else AppAction.AddSeriesAction.FinishConfirmedAfterEpisodeSelect
@@ -383,3 +403,5 @@ private fun getApiCredentials()
     }.let {
         moshi.decode<TVDBCredentials>(it)!!
     }
+
+//ID: 0-697900002735

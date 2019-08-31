@@ -27,3 +27,14 @@ data class Series(
         mergeOrAddSeason(it).mergeOrAddSeasons(newSeasons.drop(1))
     } ?: this
 }
+
+fun List<Series>.mergeOrAddSeries(newSeries: Series): List<Series> = mergeOrAdd(
+    newSeries,
+    matcher = { series1, series2 -> series1.id == series2.id },
+    merge = {
+            series -> series.copy( seasons = this.mergeOrAddSeasons(series.seasons).seasons)
+    })
+
+fun List<Series>.mergeOrAddSeriesMultiple(newSeries: List<Series>): List<Series> =
+    if (newSeries.isEmpty()) this
+    else mergeOrAddSeries(newSeries[0]).mergeOrAddSeriesMultiple(newSeries.drop(1))

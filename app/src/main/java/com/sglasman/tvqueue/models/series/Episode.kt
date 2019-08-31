@@ -15,8 +15,9 @@ data class Episode(
     val dateToWatch: Date,
     val internalID: String
 ) {
-    fun merge(newEpisode: Episode): Episode =
-        newEpisode.copy(watched = watched || newEpisode.watched)
+    fun merge(newEpisode: Episode, overwriteDateToWatch: Boolean = false): Episode =
+        newEpisode.copy(watched = watched || newEpisode.watched,
+            dateToWatch = if (overwriteDateToWatch) newEpisode.dateToWatch else dateToWatch)
 
     fun toQueueItem(): QueueItem.Episode =
         QueueItem.Episode(

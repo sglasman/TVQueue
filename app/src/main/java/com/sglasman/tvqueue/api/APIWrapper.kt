@@ -1,17 +1,16 @@
 package com.sglasman.tvqueue.api
 
 import android.util.Log
-import androidx.core.util.LogWriter
 import com.sglasman.tvqueue.TVQResponse
 import com.sglasman.tvqueue.getCurrentDate
 import com.sglasman.tvqueue.getTVQResponse
 import com.sglasman.tvqueue.ioContext
 import com.sglasman.tvqueue.models.TVDBCredentials
+import com.sglasman.tvqueue.models.addDays
 import com.sglasman.tvqueue.models.search.SearchResult
 import com.sglasman.tvqueue.models.series.Episode
 import com.sglasman.tvqueue.models.series.Season
 import com.sglasman.tvqueue.models.series.Series
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.text.SimpleDateFormat
@@ -52,11 +51,22 @@ class APIWrapper(private val service: APIService) {
                                     internalID = UUID.randomUUID().toString()
                                 )
                             }
+                            val dump = TVQEpisodes.map { it.airDate }.distinct().size == 1
+                                    && TVQEpisodes.size > 3
+                            val startDate = TVQEpisodes.map { it.airDate }.min() ?: getCurrentDate()
+                            val updatedEpisodes = if (!dump) TVQEpisodes
+                            else TVQEpisodes.map {episode ->
+                                episode.copy(dateToWatch =
+                                    startDate.addDays(7 * (episode.numberInSeason - 1)))
+                            }
                             Season(
                                 number = seasonNumber!!,
-                                episodes = TVQEpisodes,
-                                dump = TVQEpisodes.map { it.airDate }.distinct().size == 1
-                                        && TVQEpisodes.size > 1
+                                episodes = updatedEpisodes,
+                                dump = dump,
+                                useOriginalAirdates = !dump,
+                                startDate = startDate,
+                                intervalDays = 7,
+                                startingEpisode = null
                             )
                         })
                 )

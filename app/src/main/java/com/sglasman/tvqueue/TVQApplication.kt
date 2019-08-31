@@ -5,10 +5,12 @@ import android.util.Log
 import com.sglasman.tvqueue.api.APIService
 import com.sglasman.tvqueue.api.APIWrapper
 import com.sglasman.tvqueue.api.TVQRetrofit
+import com.sglasman.tvqueue.api.runUpdates
 import com.sglasman.tvqueue.models.storage.SharedPrefsStorage
 import com.sglasman.tvqueue.models.storage.synchronizeEpisodeIds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.withContext
 
 @ExperimentalCoroutinesApi
 class TVQApplication : Application() {
@@ -22,11 +24,14 @@ class TVQApplication : Application() {
         launch {
             sendAction(AppAction.Login)
             sendAction(AppAction.GetQueue)
-            appModel.openSubscription().consumeEach {
-                it.apiToken?.let { Log.d("TOKRON", it) }
-            }
-
+            sendAction(AppAction.RunUpdates)
         }
         launch { startEngine() }
+        launch(ioContext) {
+            runUpdates()
+            withContext(mainContext) {
+                refreshChannel.send(Unit)
+            }
+        }
     }
 }

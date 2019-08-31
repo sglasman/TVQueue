@@ -11,6 +11,7 @@ sealed class AppAction {
     data class SeriesTextClicked(val searchText: String) : AppAction()
     object QueueTextClicked : AppAction()
     object GetQueue : AppAction()
+    object RunUpdates : AppAction()
     object GetReadyToRestart: AppAction()
 
     sealed class QueueAction: AppAction() {

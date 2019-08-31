@@ -35,3 +35,4 @@ val moshi: Moshi = Moshi.Builder()
 var getCurrentDate: () -> Date = { Date() }
 
 val refreshChannel = Channel<Unit>(Channel.UNLIMITED)
+val imeChannel = Channel<Boolean>(Channel.UNLIMITED)

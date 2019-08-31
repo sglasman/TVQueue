@@ -121,9 +121,9 @@ class AddSeriesView @JvmOverloads constructor(
                 }
                 explanation.text = context.getString(
                     when {
-                        model.futureDump -> R.string.explanation_future_dump
+                        model.selectedSeason?.futureDump == true -> R.string.explanation_future_dump
                         model.dump -> R.string.explanation_past_dump
-                        model.selectedSeasonFinishedAiring -> R.string.explanation_already_aired
+                        model.selectedSeason?.finishedAiring == true -> R.string.explanation_already_aired
                         else -> R.string.explanation_blank
                     }
                 )
@@ -132,13 +132,13 @@ class AddSeriesView @JvmOverloads constructor(
                     model.selectedSeparation
                 )
                 schedule_text.run {
-                    if (model.pastDump) text = context.getString(R.string.start_from_today)
+                    if (model.selectedSeason?.pastDump == true) text = context.getString(R.string.start_from_today)
                     setSuspendingOnClickListener {
                         sendAction(AppAction.AddSeriesAction.ScheduleClicked)
                     }
                 }
                 use_original_text.run {
-                    if (model.pastDump) text = context.getString(R.string.start_from_original)
+                    if (model.selectedSeason?.pastDump == true) text = context.getString(R.string.start_from_original)
                     setSuspendingOnClickListener {
                         sendAction(AppAction.AddSeriesAction.UseOriginalClicked)
                     }
