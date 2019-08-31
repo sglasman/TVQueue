@@ -35,19 +35,8 @@ var dataStore: DataStore
         dataStoreBacking!!
     }
     set(value) {
-        dataStoreBacking = value.copy(
-           watchingSeries = value.watchingSeries.map {series -> series.copy(
-               seasons = series.seasons.map { season -> if (series.id == 327325)
-                   season.copy(
-                       episodes = season.episodes.map { it.copy( dateToWatch = getCurrentDate().addDays(-13 + (it.numberInSeason * 7 )).roundToDay())}
-                   )
-                   else season.copy(
-                   useOriginalAirdates = !season.dump && !season.finishedAiring,
-                   startDate = season.earliestAirdate,
-                   intervalDays = 7
-               )}
-           )}
-        ).apply {
+        dataStoreBacking = value
+            .apply {
             episodesById.clear()
             watchingSeries.flatMap { it.seasons }.forEach {
                 it.episodes.forEach {
