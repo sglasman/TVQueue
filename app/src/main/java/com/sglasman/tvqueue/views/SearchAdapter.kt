@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sglasman.tvqueue.AppAction
 import com.sglasman.tvqueue.R
-import com.sglasman.tvqueue.models.storage.dataStore
 import com.sglasman.tvqueue.models.search.SearchResult
 import com.sglasman.tvqueue.models.search.SeriesStatus
+import com.sglasman.tvqueue.models.storage.dataStore
 import com.sglasman.tvqueue.sendAction
 import kotlinx.android.synthetic.main.search_result_view.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,7 +60,8 @@ class SearchAdapter :
             }
             setSuspendingOnClickListener {
                 sendAction(
-                    AppAction.SearchAction.ResultClicked(item),
+                    if (watching) AppAction.SearchAction.ResultClickedAlreadyWatching(item)
+                    else AppAction.SearchAction.ResultClicked(item),
                     addPreviousToBackstack = true
                 )
             }

@@ -24,7 +24,10 @@ sealed class AppAction {
         data class SearchTextChanged(val text: String): SearchAction()
         data class SearchNow(val text: String): SearchAction()
         data class ResultClicked(val item: SearchResult): SearchAction()
+        data class ResultClickedAlreadyWatching(val item: SearchResult): SearchAction()
         data class GetSeriesFromResult(val item: SearchResult): SearchAction()
+        data class DropClicked(val item: SearchResult): SearchAction()
+        data class DropConfirmed(val item: SearchResult): SearchAction()
     }
 
     sealed class AddSeriesAction: AppAction() {

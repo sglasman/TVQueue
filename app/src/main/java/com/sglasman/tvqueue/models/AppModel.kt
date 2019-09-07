@@ -12,5 +12,6 @@ data class AppModel(
     val searchModel: SearchModel = SearchModel(),
     val dialogScreen: DialogScreen = DialogScreen.NotShown,
     val addSeriesModel: AddSeriesModel = AddSeriesModel(),
-    val confirmationModel: ConfirmationModel = ConfirmationModel()
+    val confirmationModel: ConfirmationModel = ConfirmationModel(),
+    val dropOrAddModel: DropOrAddModel = DropOrAddModel()
 )

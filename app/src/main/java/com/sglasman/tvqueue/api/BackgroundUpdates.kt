@@ -17,14 +17,15 @@ suspend fun Series.checkForNewSeasonsInBackgroundAndMerge(): Series? =
                 seasons = it.value.seasons.filter {
                     it.number in this.seasons.map { it.number } ||
                             (this.alertFutureSeasons &&
-                                    it.number > this.seasons.map { it.number }.max() ?: 0)
+                                    it.number > this.latestSeason ?: Int.MAX_VALUE)
                 }.map {season ->
                     season.copy(episodes = season.episodes.filter {
                         it.numberInSeason >= this.seasons.find { it.number == season.number}
                             ?.startingEpisode
                                 ?: Int.MIN_VALUE
                     })
-                }
+                },
+                latestSeason = it.value.latestSeason
             )
         } else null
     }

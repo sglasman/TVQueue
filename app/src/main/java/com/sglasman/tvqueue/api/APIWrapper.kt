@@ -12,7 +12,6 @@ import com.sglasman.tvqueue.models.series.Episode
 import com.sglasman.tvqueue.models.series.Season
 import com.sglasman.tvqueue.models.series.Series
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,44 +30,49 @@ class APIWrapper(private val service: APIService) {
     suspend fun getSeries(id: Int, name: String): TVQResponse<Series> = withContext(ioContext) {
         service.getEpisodes(id).getTVQResponse().flatMap { response ->
             try {
+                val foundSeasons = response.data.map { it.airedSeason }.distinct()
+                    .apply { if (isEmpty()) throw Exception("No seasons of show") }
+                    .map { seasonNumber ->
+                        val seasonEpisodes =
+                            response.data.filter { it.airedSeason == seasonNumber }
+                        val TVQEpisodes = seasonEpisodes.map { episode ->
+                            val parsedDate = episode.firstAired!!.parseTVDBDate()
+                            Episode(
+                                seriesTitle = name,
+                                title = episode.episodeName ?: "",
+                                seasonNumber = seasonNumber,
+                                airDate = parsedDate ?: getCurrentDate(),
+                                numberInSeason = episode.airedEpisodeNumber!!,
+                                dateToWatch = parsedDate ?: getCurrentDate(),
+                                internalID = UUID.randomUUID().toString()
+                            )
+                        }
+                        val dump = TVQEpisodes.map { it.airDate }.distinct().size == 1
+                                && TVQEpisodes.size > 3
+                        val startDate = TVQEpisodes.map { it.airDate }.min() ?: getCurrentDate()
+                        val updatedEpisodes = if (!dump) TVQEpisodes
+                        else TVQEpisodes.map { episode ->
+                            episode.copy(
+                                dateToWatch =
+                                startDate.addDays(7 * (episode.numberInSeason - 1))
+                            )
+                        }
+                        Season(
+                            number = seasonNumber!!,
+                            episodes = updatedEpisodes,
+                            dump = dump,
+                            useOriginalAirdates = !dump,
+                            startDate = startDate,
+                            intervalDays = 7,
+                            startingEpisode = null
+                        )
+                    }
                 TVQResponse.Success(Series(
                     id = id,
                     name = name,
-                    seasons = response.data.map { it.airedSeason }.distinct()
-                        .apply { if (isEmpty()) throw Exception("No seasons of show") }
-                        .map { seasonNumber ->
-                            val seasonEpisodes =
-                                response.data.filter { it.airedSeason == seasonNumber }
-                            val TVQEpisodes = seasonEpisodes.map { episode ->
-                                val parsedDate = episode.firstAired!!.parseTVDBDate()
-                                Episode(
-                                    seriesTitle = name,
-                                    title = episode.episodeName ?: "",
-                                    seasonNumber = seasonNumber,
-                                    airDate = parsedDate ?: getCurrentDate(),
-                                    numberInSeason = episode.airedEpisodeNumber!!,
-                                    dateToWatch = parsedDate ?: getCurrentDate(),
-                                    internalID = UUID.randomUUID().toString()
-                                )
-                            }
-                            val dump = TVQEpisodes.map { it.airDate }.distinct().size == 1
-                                    && TVQEpisodes.size > 3
-                            val startDate = TVQEpisodes.map { it.airDate }.min() ?: getCurrentDate()
-                            val updatedEpisodes = if (!dump) TVQEpisodes
-                            else TVQEpisodes.map {episode ->
-                                episode.copy(dateToWatch =
-                                    startDate.addDays(7 * (episode.numberInSeason - 1)))
-                            }
-                            Season(
-                                number = seasonNumber!!,
-                                episodes = updatedEpisodes,
-                                dump = dump,
-                                useOriginalAirdates = !dump,
-                                startDate = startDate,
-                                intervalDays = 7,
-                                startingEpisode = null
-                            )
-                        })
+                    seasons = foundSeasons,
+                    latestSeason = foundSeasons.map { it.number }.max()
+                )
                 )
             } catch (e: Exception) {
                 Log.e("getSeries", "Trouble interpreting response", e)

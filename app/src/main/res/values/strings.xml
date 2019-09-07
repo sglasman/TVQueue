@@ -27,6 +27,9 @@
     <string name="separate_episodes_by">Separate episodes by</string>
     <string name="start_from_today">START FROM TODAY</string>
     <string name="start_from_original">START FROM ORIGINAL AIRDATE</string>
+    <string name="you_have_already_added_at_least_one_season_of_this_series">You have already added at least one season of this series.</string>
+    <string name="add_another_season">ADD ANOTHER SEASON</string>
+    <string name="drop_series">DROP SERIES</string>
     <plurals name="days">
         <item quantity="one">day</item>
         <item quantity="other">days</item>

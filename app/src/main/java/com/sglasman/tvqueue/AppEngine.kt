@@ -124,8 +124,10 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
     }
 
     is AppAction.RunUpdates -> {
-        withContext(ioContext) { runUpdates() }
-        refreshChannel.send(Unit)
+        launch {
+            withContext(ioContext) { runUpdates() }
+            refreshChannel.send(Unit)
+        }
         model
     }
 
@@ -181,6 +183,34 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
                 selectedSeparation = 7
             )
         )
+    }
+
+    is AppAction.SearchAction.ResultClickedAlreadyWatching -> {
+        imeChannel.send(false)
+        model.copy(
+            dialogScreen = DialogScreen.DropOrAdd,
+            dropOrAddModel = model.dropOrAddModel.copy(item = action.item)
+        )
+    }
+
+    is AppAction.SearchAction.DropClicked -> {
+        model.copy(
+            dialogScreen = DialogScreen.Confirmation,
+            confirmationModel = ConfirmationModel(
+                actionToConfirm = AppAction.SearchAction.DropConfirmed(action.item),
+                confirmationText = "Drop series ${action.item.name}?"
+            )
+        )
+    }
+
+    is AppAction.SearchAction.DropConfirmed -> {
+        launch {
+            dataStore = dataStore.copy(watchingSeries = dataStore.watchingSeries.filter {
+                it.id != action.item.id
+            })
+            refreshChannel.send(Unit)
+        }
+        model.copy(dialogScreen = DialogScreen.NotShown)
     }
 
     is AppAction.SearchAction.GetSeriesFromResult -> model.copy(

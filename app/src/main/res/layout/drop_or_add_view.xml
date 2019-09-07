@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drop_or_add_root">
+
+    <TextView
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/desc_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="@string/you_have_already_added_at_least_one_season_of_this_series"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_another_text"
+        app:layout_constraintTop_toBottomOf="@id/desc_text"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/green"
+        android:text="@string/add_another_season"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="18dp"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/add_another_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="18dp"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:id="@+id/drop_text"
+        android:text="@string/drop_series"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

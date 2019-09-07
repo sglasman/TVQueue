@@ -23,6 +23,7 @@ class TVQActivity : AppCompatActivity() {
     private val searchView by lazy { SearchView(this) }
     private val addSeriesView by lazy { AddSeriesView(this) }
     private val confirmationView by lazy { ConfirmationView(this) }
+    private val dropOrAddView by lazy { DropOrAddView(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +92,10 @@ class TVQActivity : AppCompatActivity() {
             is DialogScreen.Confirmation -> {
                 dialog_content.swapViewIdempotent(confirmationView)
                 confirmationView.update(model.confirmationModel)
+            }
+            is DialogScreen.DropOrAdd -> {
+                dialog_content.swapViewIdempotent(dropOrAddView)
+                dropOrAddView.update(model.dropOrAddModel)
             }
         }
     }
