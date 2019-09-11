@@ -44,7 +44,7 @@ sealed class AppAction {
         object SeparationUpClicked: AddSeriesAction()
         object SeparationDownClicked: AddSeriesAction()
         object ScheduleClicked: AddSeriesAction()
-        class ScheduleSeason(val startDate: Date): AddSeriesAction()
+        class ScheduleSeason(val startDate: Date?): AddSeriesAction()
         object UseOriginalClicked: AddSeriesAction()
     }
 }

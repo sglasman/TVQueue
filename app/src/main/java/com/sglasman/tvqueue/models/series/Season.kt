@@ -34,7 +34,7 @@ data class Season(
                             && episode1.numberInSeason == episode2.numberInSeason
                 },
                 merge = {
-                    merge(it, overwriteDateToWatch = useOriginalAirdates == true)
+                    merge(it, overwriteDateToWatch = useOriginalAirdates == true || dateToWatch == null)
                 }
             )
         )
@@ -44,16 +44,16 @@ data class Season(
         mergeOrAddEpisode(it).mergeOrAddEpisodes(newEpisodes.drop(1))
     } ?: this
 
-    val earliestAirdate: Date by lazy {
-        episodes.map { it.airDate }.min() ?: getCurrentDate().roundToDay()
+    val earliestAirdate: Date? by lazy {
+        episodes.mapNotNull { it.airDate }.min()
     }
 
-    val latestAirdate: Date by lazy {
-        episodes.map { it.airDate }.max() ?: getCurrentDate().roundToDay()
+    val latestAirdate: Date? by lazy {
+        episodes.mapNotNull { it.airDate }.max()
     }
 
     val finishedAiring: Boolean by lazy {
-        latestAirdate <= getCurrentDate()
+        latestAirdate != null && latestAirdate!! <= getCurrentDate()
     }
 
     val pastDump: Boolean by lazy { dump && finishedAiring }

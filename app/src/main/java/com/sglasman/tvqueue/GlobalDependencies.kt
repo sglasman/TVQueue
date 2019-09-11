@@ -29,7 +29,7 @@ var mainContext: CoroutineContext = Dispatchers.Main
 var ioContext: CoroutineContext = Dispatchers.IO
 
 val moshi: Moshi = Moshi.Builder()
-    .add(Date::class.java, Rfc3339DateJsonAdapter())
+    .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
     .build()
 
 var getCurrentDate: () -> Date = { Date() }

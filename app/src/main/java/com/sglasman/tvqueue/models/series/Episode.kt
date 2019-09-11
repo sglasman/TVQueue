@@ -11,8 +11,8 @@ data class Episode(
     val title: String,
     val seasonNumber: Int?,
     val numberInSeason: Int,
-    val airDate: Date,
-    val dateToWatch: Date,
+    val airDate: Date?,
+    val dateToWatch: Date?,
     val internalID: String
 ) {
     fun merge(newEpisode: Episode, overwriteDateToWatch: Boolean = false): Episode =

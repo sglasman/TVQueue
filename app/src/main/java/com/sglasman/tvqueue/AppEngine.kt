@@ -361,8 +361,7 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
         confirmationModel = ConfirmationModel(
             actionToConfirm = model.addSeriesModel.run {
                 AppAction.AddSeriesAction.ScheduleSeason(
-                    startDate = if (selectedSeason?.futureDump == true)
-                        selectedSeason.earliestAirdate
+                    startDate = if (selectedSeason?.futureDump == true) selectedSeason.earliestAirdate
                     else getCurrentDate().roundToDay()
                 )
             },
@@ -384,7 +383,7 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
                         .sortedBy { it.airDate }
                         .map { episode ->
                             episode.copy(
-                                dateToWatch = action.startDate.addDays(selectedSeparation * (episode.numberInSeason - 1))
+                                dateToWatch = action.startDate?.addDays(selectedSeparation * (episode.numberInSeason - 1))
                             )
                         },
                     useOriginalAirdates = false,

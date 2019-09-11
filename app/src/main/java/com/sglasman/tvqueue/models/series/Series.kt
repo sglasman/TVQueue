@@ -18,8 +18,15 @@ data class Series(
         seasons = seasons.mergeOrAdd(newSeason,
             matcher = { season1, season2 -> season1.number == season2.number },
             merge = { season ->
-                Log.d("Merge", "Merging $season into $this")
-                mergeOrAddEpisodes(season.episodes)
+                (if (useOriginalAirdates != null) this
+                else copy(
+                    startDate = season.startDate,
+                    useOriginalAirdates = season.useOriginalAirdates,
+                    intervalDays = season.intervalDays
+                )).run {
+                    Log.d("Merge", "Merging $season into $this")
+                    mergeOrAddEpisodes(season.episodes)
+                }
             })
     )
 

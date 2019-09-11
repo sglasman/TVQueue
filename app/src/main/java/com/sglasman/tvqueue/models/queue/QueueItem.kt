@@ -11,7 +11,7 @@ sealed class QueueItem {
         val episodeTitle: String,
         val seasonNumber: Int?,
         val episodeNumber: Int,
-        val dateToWatch: Date,
+        val dateToWatch: Date?,
         val internalID: String
     ) : QueueItem(), Comparable<Episode> {
 
@@ -20,7 +20,9 @@ sealed class QueueItem {
                 if (episodeNumber == other.episodeNumber) {
                     episodeTitle.compareTo(other.episodeTitle)
                 } else episodeNumber.compareTo(other.episodeNumber)
-            } else dateToWatch.compareTo(other.dateToWatch)
+            } else if (dateToWatch == null) 1
+            else if (other.dateToWatch == null) -1
+            else dateToWatch.compareTo(other.dateToWatch)
     }
 
     sealed class Separator(open val text: String) : QueueItem() {
@@ -40,28 +42,31 @@ fun List<QueueItem.Episode>.addSeparators(): List<QueueItem> {
     if (isEmpty()) return listOf()
 
     val datesToItems = groupBy { it.dateToWatch }
-    val dates: List<Date> = datesToItems.keys.toList()
+    val dates: List<Date?> = datesToItems.keys.toList()
     val groups: List<List<QueueItem.Episode>> = datesToItems.values.toList()
 
-    val earliestDateIfBeforeToday: Date? = this[0].dateToWatch.let {
+    val earliestDateIfBeforeToday: Date? = this[0].dateToWatch?.let {
         if (it <= getCurrentDate()) it else null
     }
 
-    val earliestDateAfterToday: Date? = dates.filter { it > getCurrentDate() }.min()
+    val earliestDateAfterToday: Date? = dates.filterNotNull().filter { it > getCurrentDate() }.min()
 
     val returnValue =  groups.map {
-        (if (it[0].dateToWatch == earliestDateIfBeforeToday)
-            listOf(QueueItem.Separator.Dark("Queued"))
-        else listOf<QueueItem>()) +
-                (if (it[0].dateToWatch == earliestDateAfterToday)
-                    listOf(QueueItem.Separator.Dark("Upcoming"))
-                else listOf()) +
-                        listOf(
-                            QueueItem.Separator.Light(
-                                SimpleDateFormat("EEE, d MMMM yyyy", Locale.getDefault())
-                                    .format(it[0].dateToWatch)
-                            )
-                        ) + it
+        (when {
+            it[0].dateToWatch == null -> listOf(QueueItem.Separator.Dark("Date TBA"))
+            it[0].dateToWatch == earliestDateIfBeforeToday -> listOf(QueueItem.Separator.Dark("Queued"))
+            it[0].dateToWatch == earliestDateAfterToday -> listOf(QueueItem.Separator.Dark("Upcoming"))
+            else -> listOf<QueueItem>()
+        }) +
+                (it[0].dateToWatch?.let { date ->
+                    listOf(
+                        QueueItem.Separator.Light(
+                            SimpleDateFormat("EEE, d MMMM yyyy", Locale.getDefault())
+                                .format(date)
+                        )
+                    )
+                }.orEmpty()) +
+                it
     }.flatten()
     return returnValue
 }

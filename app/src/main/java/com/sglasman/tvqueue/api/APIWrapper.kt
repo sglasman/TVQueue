@@ -41,15 +41,17 @@ class APIWrapper(private val service: APIService) {
                                 seriesTitle = name,
                                 title = episode.episodeName ?: "",
                                 seasonNumber = seasonNumber,
-                                airDate = parsedDate ?: getCurrentDate(),
+                                airDate = parsedDate,
                                 numberInSeason = episode.airedEpisodeNumber!!,
-                                dateToWatch = parsedDate ?: getCurrentDate(),
+                                dateToWatch = parsedDate,
                                 internalID = UUID.randomUUID().toString()
                             )
                         }
-                        val dump = TVQEpisodes.map { it.airDate }.distinct().size == 1
-                                && TVQEpisodes.size > 3
-                        val startDate = TVQEpisodes.map { it.airDate }.min() ?: getCurrentDate()
+                        val dump = TVQEpisodes.map { it.airDate }.distinct().run {
+                            size == 1 && this != listOf<Date?>(null)
+                        } && TVQEpisodes.size > 3
+                        val startDate =
+                            TVQEpisodes.mapNotNull { it.airDate }.min() ?: getCurrentDate()
                         val updatedEpisodes = if (!dump) TVQEpisodes
                         else TVQEpisodes.map { episode ->
                             episode.copy(
@@ -61,7 +63,9 @@ class APIWrapper(private val service: APIService) {
                             number = seasonNumber!!,
                             episodes = updatedEpisodes,
                             dump = dump,
-                            useOriginalAirdates = !dump,
+                            useOriginalAirdates =
+                            if (TVQEpisodes.mapNotNull { it.airDate }.isEmpty()) null
+                            else !dump,
                             startDate = startDate,
                             intervalDays = 7,
                             startingEpisode = null
