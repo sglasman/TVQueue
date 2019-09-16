@@ -3,6 +3,7 @@ package com.sglasman.tvqueue.views
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -18,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class QueueAdapter : ListAdapter<QueueItem, QueueAdapter.QueueHolder>(QueueItemDiff()) {
 
+    @ExperimentalCoroutinesApi
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QueueHolder =
         if (viewType == EPISODE) QueueHolder.EpisodeHolder(
             LayoutInflater.from(parent.context).inflate(
@@ -55,7 +57,8 @@ class QueueAdapter : ListAdapter<QueueItem, QueueAdapter.QueueHolder>(QueueItemD
                     season_episode_text.text = item.seasonNumber?.let {
                         "S${it}E${item.episodeNumber}"
                     } ?: "E${item.episodeNumber}"
-                    if (item.episodeTitle.isBlank()) episode_title_text.visibility = GONE
+                    episode_title_text.visibility =
+                        if (item.episodeTitle.isBlank()) GONE else VISIBLE
                     episode_title_text.text = item.episodeTitle
                     setSuspendingOnClickListener {
                         sendAction(AppAction.QueueAction.QueueItemClicked(item),
@@ -90,11 +93,14 @@ class QueueAdapter : ListAdapter<QueueItem, QueueAdapter.QueueHolder>(QueueItemD
 
 class QueueItemDiff : DiffUtil.ItemCallback<QueueItem>() {
     override fun areItemsTheSame(oldItem: QueueItem, newItem: QueueItem): Boolean =
-        oldItem is QueueItem.Episode &&
+        (oldItem is QueueItem.Episode &&
                 newItem is QueueItem.Episode &&
                 oldItem.seriesTitle == newItem.seriesTitle &&
                 oldItem.episodeNumber == newItem.episodeNumber &&
-                oldItem.seasonNumber == newItem.seasonNumber
+                oldItem.seasonNumber == newItem.seasonNumber) ||
+                (oldItem !is QueueItem.Episode &&
+                        newItem !is QueueItem.Episode &&
+                        oldItem == newItem)
 
     override fun areContentsTheSame(oldItem: QueueItem, newItem: QueueItem): Boolean =
         oldItem == newItem
