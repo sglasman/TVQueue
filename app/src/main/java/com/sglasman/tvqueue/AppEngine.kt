@@ -8,6 +8,7 @@ import com.sglasman.tvqueue.models.confirmation.ConfirmationModel
 import com.sglasman.tvqueue.models.queue.addSeparators
 import com.sglasman.tvqueue.models.search.SearchStatus
 import com.sglasman.tvqueue.models.storage.dataStore
+import com.sglasman.tvqueue.models.storage.markEpisodeWatched
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -142,7 +143,7 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
     }
 
     is AppAction.QueueAction.MarkWatchedConfirmed -> {
-        dataStore = dataStore.apply { episodesById[action.item.internalID]?.watched = true }
+        dataStore = dataStore.markEpisodeWatched(action.item.internalID)
         model.backOutOfDialog()
     }
 
