@@ -1,16 +1,15 @@
 package com.sglasman.tvqueue.api
 
 import android.util.Log
-import com.sglasman.tvqueue.TVQResponse
-import com.sglasman.tvqueue.getCurrentDate
-import com.sglasman.tvqueue.getTVQResponse
-import com.sglasman.tvqueue.ioContext
+import com.sglasman.tvqueue.*
 import com.sglasman.tvqueue.models.TVDBCredentials
 import com.sglasman.tvqueue.models.addDays
 import com.sglasman.tvqueue.models.search.SearchResult
 import com.sglasman.tvqueue.models.series.Episode
+import com.sglasman.tvqueue.models.series.EpisodeResponse
 import com.sglasman.tvqueue.models.series.Season
 import com.sglasman.tvqueue.models.series.Series
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,11 +29,19 @@ class APIWrapper(private val service: APIService) {
     suspend fun getSeries(id: Int, name: String): TVQResponse<Series> = withContext(ioContext) {
         service.getEpisodes(id).getTVQResponse().flatMap { response ->
             try {
-                val foundSeasons = response.data.map { it.airedSeason }.distinct()
+                val episodes: List<EpisodeResponse> = if (response.links.last == 1) response.data
+                else response.data + (2..response.links.last).flatMap {
+                    runBlocking {
+                        service.getEpisodes(id, page = it).getTVQResponse().let {
+                            if (it is TVQResponse.Success) it.value.data else listOf()
+                        }
+                    }
+                }
+                val foundSeasons = episodes.map { it.airedSeason }.distinct()
                     .apply { if (isEmpty()) throw Exception("No seasons of show") }
                     .map { seasonNumber ->
                         val seasonEpisodes =
-                            response.data.filter { it.airedSeason == seasonNumber }
+                            episodes.filter { it.airedSeason == seasonNumber }
                         val TVQEpisodes = seasonEpisodes.map { episode ->
                             val parsedDate = episode.firstAired!!.parseTVDBDate()
                             Episode(

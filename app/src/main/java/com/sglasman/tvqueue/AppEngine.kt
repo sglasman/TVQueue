@@ -83,7 +83,9 @@ private suspend fun doTransition(model: AppModel, action: AppAction): AppModel =
     is AppAction.Login -> model.copy(
         currentScreen = Screen.QueueScreen,
         apiToken = when (val response = apiWrapper.login(getApiCredentials())) {
-            is TVQResponse.Success -> response.value
+            is TVQResponse.Success -> {
+                response.value.also { Log.d("API token", it) }
+            }
             is TVQResponse.Error -> model.apiToken
         }
     )
