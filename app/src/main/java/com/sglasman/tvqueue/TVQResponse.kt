@@ -15,6 +15,11 @@ sealed class TVQResponse<T> {
         is Success -> f(value)
         is Error -> Error(errorCode, message)
     }
+
+    suspend fun <U> suspendFlatMap(f: suspend (T) -> TVQResponse<U>): TVQResponse<U> = when (this) {
+        is Success -> f(value)
+        is Error -> Error(errorCode, message)
+    }
 }
 
 fun <T> Response<T>.getTVQResponse(): TVQResponse<T> = body()?.let {

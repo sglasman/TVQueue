@@ -9,6 +9,7 @@ import com.sglasman.tvqueue.models.series.Episode
 import com.sglasman.tvqueue.models.series.EpisodeResponse
 import com.sglasman.tvqueue.models.series.Season
 import com.sglasman.tvqueue.models.series.Series
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -27,15 +28,13 @@ class APIWrapper(private val service: APIService) {
     }
 
     suspend fun getSeries(id: Int, name: String): TVQResponse<Series> = withContext(ioContext) {
-        service.getEpisodes(id).getTVQResponse().flatMap { response ->
+        service.getEpisodes(id).getTVQResponse().suspendFlatMap { response ->
             try {
                 val episodes: List<EpisodeResponse> = if (response.links.last == 1) response.data
                 else response.data + (2..response.links.last).flatMap {
-                    runBlocking {
                         service.getEpisodes(id, page = it).getTVQResponse().let {
                             if (it is TVQResponse.Success) it.value.data else listOf()
                         }
-                    }
                 }
                 val foundSeasons = episodes.map { it.airedSeason }.distinct()
                     .apply { if (isEmpty()) throw Exception("No seasons of show") }
