@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 private val addApiTokenInterceptor: Interceptor = Interceptor { chain ->
@@ -23,6 +24,8 @@ private val TVQClient: OkHttpClient = OkHttpClient
     .Builder()
     .addInterceptor(addApiTokenInterceptor)
     .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY})
+    .connectTimeout(60000, TimeUnit.MILLISECONDS)
+    .readTimeout(60000, TimeUnit.MILLISECONDS)
     .build()
 
 @ExperimentalCoroutinesApi
